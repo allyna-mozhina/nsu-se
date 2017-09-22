@@ -10,13 +10,13 @@
 # точностью до перестановки.
 
 def generate_without_doubles(n, alphabet)
-    generate_next = lambda do |str| 
-        alphabet.select { |letter| letter != str[-1] }.map { |letter| str + letter } 
+    generate_next = lambda do |arr| 
+        alphabet.select { |letter| letter != arr[-1] }.map { |letter| arr + [letter] } 
     end
-    (1..n).reduce(['']) { |memo| (memo.map &generate_next).reduce { |memo, arr| memo + arr } }
+    (1..n).reduce([[]]) { |memo| memo.flat_map &generate_next }
 end
 
 n = 2
-alphabet = ['a', 'b', 'c']
+alphabet = [2, 3, 6]
 
-generate_without_doubles(n, alphabet).each { |str| puts str }
+generate_without_doubles(n, alphabet).each { |arr| puts arr.inspect }
