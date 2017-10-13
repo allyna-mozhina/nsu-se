@@ -24,12 +24,12 @@
 require 'set'
 
 rx = /^
-     ([\w\.\/,-]+)\s                                   #host
+     (?<host>[\w\.\/,-]+)\s                                        #host
      -\s-\s
-     (\[\d\d\/\w+\/\d\d\d\d:\d\d:\d\d:\d\d\s-0400\])\s #timestamp
-     ("(GET|HEAD|POST)\s[\s\/\w\.\*,_?+~%:#=><-]+")\s  #request
-     (\d+)\s                                           #reply code
-     (\d+|-)                                           #reply bytes
+     (?<timestamp>\[\d\d\/\w+\/\d\d\d\d:\d\d:\d\d:\d\d\s-0400\])\s #timestamp
+     (?<request>"(GET|HEAD|POST)\s[\s\/\w\.\*,_?+~%:#=><-]+")\s    #request
+     (?<reply_code>\d+)\s                                          #reply code
+     (?<reply_bytes>\d+|-)                                         #reply bytes
      $/x
 
 unique_hosts = Set.new
@@ -43,9 +43,9 @@ File.open("NASA_Aug95.log").each do |line|
         next
     end
 
-    unique_hosts.add?(md[1])
+    unique_hosts.add?(md[:host])
 
-    if md[5].start_with?('2')
+    if md[:reply_code].start_with?('2')
         success_count += 1
     end
 end
