@@ -5,13 +5,13 @@
 
 (ns task4.main)
 
-(defn generate_without_doubles 
+(defn generate-without-doubles 
   [n, alphabet]
-  (let [generate_next (fn [list] (map #(cons % list) (filter #(not= % (first list)) alphabet)))
-        permutation (iterate #(mapcat generate_next %) (list '()))]
+  (let [generate-next (fn [list] (map #(cons % list) (filter #(not= % (first list)) alphabet)))
+        permutation (iterate #(mapcat generate-next %) (list '()))]
   (nth permutation n)
   ))
 
 (defn -main
   [& raw-args]
-  (println (generate_without_doubles 2 (list "a" "b" "c"))))
+  (println (generate-without-doubles 3 '(a b c))))
