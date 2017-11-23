@@ -65,3 +65,23 @@
 (defn args
   [expr]
   (rest expr))
+
+(def dnf
+  (list
+    [(fn [expr] (then? expr))
+     (fn [expr] 
+       (let [arg (args expr)] 
+         (disjunc (negat (first arg)) (rest arg))))]
+    [(fn [expr]
+       (if (negat? expr)
+         (or 
+           (conjunc? (args expr))
+           (disjunc? (args expr))
+         false)))
+     (fn [expr]
+       (let [negated (args expr)
+             neg-args (map negat (args negated))]
+       (if (conjunc? negated)
+         (apply disjunc neg-args)
+         (apply conjunc neg-args)))))]))
+
