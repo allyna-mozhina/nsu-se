@@ -8,6 +8,6 @@
     (is (= 0 (const-val (const 0))))
     (is (variable? (variable :a)))
     (is (conjunc? (conjunc (variable :a) (const 0))))
-    (is (disjunc? (disjunc (variable :a) (variable :b) (const 1))))
+    (is (disjunc? (disjunc (variable :b) (const 1))))
     (is (negat? (negat (variable :c))))
     (is (then? (then (const 0) (const 1))))))

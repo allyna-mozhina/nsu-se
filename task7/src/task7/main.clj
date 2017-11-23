@@ -31,16 +31,16 @@
   (= ::var (first expr)))
 
 (defn conjunc
-  [expr & rest]
-  (cons ::and (cons expr rest)))
+  [lexpr rexpr]
+  (cons ::and (cons lexpr rexpr)))
 
 (defn conjunc?
   [expr]
   (= ::and (first expr)))
 
 (defn disjunc
-  [expr & rest]
-  (cons ::or (cons expr rest)))
+  [lexpr rexpr]
+  (cons ::or (cons lexpr rexpr)))
 
 (defn disjunc?
   [expr]
@@ -66,22 +66,48 @@
   [expr]
   (rest expr))
 
-(def dnf
+(def dnf-rules
   (list
+    [(fn [expr] (const? expr)) identity]
+    [(fn [expr] (variable? expr)) identity]
+    [(fn [expr] 
+       (if (negat? expr)
+         (or
+           (variable? (args expr))
+           (const? (args expr))
+         false)) identity]
+    [(fn [expr] (disjunc? expr))
+     (fn [expr]
+       (apply disjunc (map convert-to-dnf (expr args))))]
+    [(fn [expr] 
+       (if 
+         (and
+           (negat? expr)
+           (negat? (args expr)))))
+     (fn [expr] (convert-to-dnf (args (args expr))))]
     [(fn [expr] (then? expr))
      (fn [expr] 
        (let [arg (args expr)] 
-         (disjunc (negat (first arg)) (rest arg))))]
+         (disjunc 
+           (convert-to-dnf (negat (first arg))) 
+           (convert-to-dnf (second arg)))))]
     [(fn [expr]
        (if (negat? expr)
-         (or 
-           (conjunc? (args expr))
-           (disjunc? (args expr))
-         false)))
+         (not 
+           (or 
+             (variable? (args expr))
+             (const? (args expr))
+             (negat? (args expr))))
+         false))
      (fn [expr]
-       (let [negated (args expr)
+       (let [negated (convert-to-dnf (args expr))
              neg-args (map negat (args negated))]
        (if (conjunc? negated)
          (apply disjunc neg-args)
-         (apply conjunc neg-args)))))]))
+         (apply conjunc neg-args)))))]
+    [(fn [expr] 
+       (and
+         (conjunc? expr)
+         ()
+         (not (co))))]))
 
